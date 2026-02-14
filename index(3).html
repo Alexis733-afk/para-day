@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Day ✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive;
+            background: linear-gradient(135deg, #E3F2FD 0%, #F3E5F5 50%, #FFF9C4 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            color: #FFD700;
+            font-size: 20px;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-title {
+            font-size: 3.5em;
+            color: #9C27B0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .main-message {
+            font-size: 1.4em;
+            color: #5C6BC0;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            line-height: 1.6;
+        }
+
+        .smile-button {
+            background: linear-gradient(135deg, #FFB74D 0%, #FF9800 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.3);
+            transition: all 0.3s ease;
+            font-family: inherit;
+            margin: 30px auto;
+            display: block;
+        }
+
+        .smile-button:hover {
+            transform: scale(1.1) rotate(2deg);
+            box-shadow: 0 8px 25px rgba(255, 152, 0, 0.5);
+        }
+
+        .smile-button:active {
+            transform: scale(0.95);
+        }
+
+        .message-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            max-width: 80%;
+            transition: transform 0.3s ease;
+        }
+
+        .message-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .message-popup .emoji {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: spin 1s ease-in-out;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg) scale(0); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .message-popup p {
+            font-size: 1.5em;
+            color: #7B1FA2;
+            margin-bottom: 20px;
+        }
+
+        .close-popup {
+            background: #E1BEE7;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-family: inherit;
+        }
+
+        .drawing-section {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 30px 0;
+        }
+
+        .section-title {
+            color: #7B1FA2;
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .canvas-container {
+            text-align: center;
+        }
+
+        #drawingCanvas {
+            border: 4px dashed #9C27B0;
+            border-radius: 15px;
+            cursor: crosshair;
+            max-width: 100%;
+            background: white;
+            touch-action: none;
+        }
+
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .color-btn {
+            width: 50px;
+            height: 50px;
+            border: 3px solid white;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .color-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .color-btn.active {
+            border-color: #333;
+            transform: scale(1.3);
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: #E1BEE7;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .control-btn:hover {
+            background: #CE93D8;
+            transform: translateY(-2px);
+        }
+
+        .coloring-game {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .shape-container {
+            margin: 20px 0;
+        }
+
+        .shape {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .shape svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .shape:hover {
+            transform: scale(1.1);
+        }
+
+        .motivation-box {
+            background: linear-gradient(135deg, #FFF9C4 0%, #F0F4C3 100%);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .motivation-text {
+            font-size: 1.6em;
+            color: #F57C00;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+
+        .floating-element {
+            position: fixed;
+            pointer-events: none;
+            font-size: 2em;
+            animation: floatUp 4s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-200px) rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .main-title {
+                font-size: 2.5em;
+            }
+            
+            .main-message {
+                font-size: 1.2em;
+            }
+            
+            .smile-button {
+                font-size: 1.2em;
+                padding: 15px 30px;
+            }
+
+            #drawingCanvas {
+                width: 100%;
+            }
+        }
+
+        .sun {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 3em;
+            animation: rotate 10s linear infinite;
+            z-index: 3;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cloud {
+            position: fixed;
+            font-size: 2em;
+            animation: drift 20s linear infinite;
+            z-index: 1;
+            opacity: 0.6;
+        }
+
+        @keyframes drift {
+            from { left: -100px; }
+            to { left: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="starsContainer"></div>
+    <div class="sun">☀️</div>
+    <div class="cloud" style="top: 50px;">☁️</div>
+    <div class="cloud" style="top: 150px; animation-delay: -10s;">☁️</div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="main-title">Para Day ✨</h1>
+            <div class="main-message">
+                ¡Que te mejores pronto! Eres súper fuerte y valiente. 🌈
+            </div>
+        </div>
+
+        <button class="smile-button" onclick="showSmile()">
+            ¡Presiona aquí para animarte! 😊
+        </button>
+
+        <div class="drawing-section">
+            <h2 class="section-title">✨ Tu Espacio de Arte Mágico ✨</h2>
+            <div class="canvas-container">
+                <canvas id="drawingCanvas" width="600" height="400"></canvas>
+                <div class="color-palette">
+                    <div class="color-btn active" style="background: #E91E63;" onclick="selectColor('#E91E63')"></div>
+                    <div class="color-btn" style="background: #9C27B0;" onclick="selectColor('#9C27B0')"></div>
+                    <div class="color-btn" style="background: #2196F3;" onclick="selectColor('#2196F3')"></div>
+                    <div class="color-btn" style="background: #4CAF50;" onclick="selectColor('#4CAF50')"></div>
+                    <div class="color-btn" style="background: #FFEB3B;" onclick="selectColor('#FFEB3B')"></div>
+                    <div class="color-btn" style="background: #FF9800;" onclick="selectColor('#FF9800')"></div>
+                    <div class="color-btn" style="background: #795548;" onclick="selectColor('#795548')"></div>
+                    <div class="color-btn" style="background: #000000;" onclick="selectColor('#000000')"></div>
+                </div>
+                <div class="control-buttons">
+                    <button class="control-btn" onclick="clearCanvas()">🗑️ Borrar Todo</button>
+                    <button class="control-btn" onclick="changeLineWidth(-2)">➖ Más Fino</button>
+                    <button class="control-btn" onclick="changeLineWidth(2)">➕ Más Grueso</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="coloring-game">
+            <h2 class="section-title">🌟 Colorea la Estrella Mágica 🌟</h2>
+            <p style="color: #7B1FA2; font-size: 1.2em;">Haz clic en la estrella para cambiar su color</p>
+            <div class="shape-container">
+                <div class="shape" onclick="colorShape()">
+                    <svg viewBox="0 0 200 200" id="magicShape">
+                        <path d="M100,20 L115,70 L170,70 L125,105 L140,155 L100,120 L60,155 L75,105 L30,70 L85,70 Z" 
+                              fill="#FFD700" stroke="#FFA000" stroke-width="3"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="motivation-box">
+            <p class="motivation-text">
+                ¡Descansa mucho y pronto estarás lista para nuevas aventuras! ✨
+            </p>
+        </div>
+    </div>
+
+    <div class="message-popup" id="messagePopup">
+        <div class="emoji" id="popupEmoji">🌈</div>
+        <p id="popupMessage">¡Eres increíble!</p>
+        <button class="close-popup" onclick="closePopup()">¡Genial! 🎉</button>
+    </div>
+
+    <script>
+        // Crear estrellas flotantes
+        const starsContainer = document.getElementById('starsContainer');
+        for (let i = 0; i < 30; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.textContent = '✨';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            starsContainer.appendChild(star);
+        }
+
+        // Mensajes alegres
+        const messages = [
+            { text: "¡Eres súper genial! ⭐", emoji: "⭐" },
+            { text: "¡Wow, qué talentosa eres! 🌟", emoji: "😊" },
+            { text: "¡Eres muy fuerte! 💪", emoji: "💪" },
+            { text: "¡Pronto estarás saltando de alegría! 🌈", emoji: "🌈" },
+            { text: "¡Dibujas increíble! 🎨", emoji: "🎨" },
+            { text: "¡Eres una campeona! 👑", emoji: "👑" },
+            { text: "¡Mañana te sentirás mucho mejor! 🦋", emoji: "🦋" },
+            { text: "¡Eres una niña muy valiente! ✨", emoji: "✨" }
+        ];
+
+        // Sonidos usando Web Audio API
+        let audioContext;
+        function playHappySound() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 523.25; // C5
+            gainNode.gain.value = 0.3;
+            
+            oscillator.start();
+            
+            setTimeout(() => {
+                oscillator.frequency.value = 659.25; // E5
+            }, 100);
+            
+            setTimeout(() => {
+                oscillator.frequency.value = 783.99; // G5
+            }, 200);
+            
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function showSmile() {
+            playHappySound();
+            
+            const popup = document.getElementById('messagePopup');
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            document.getElementById('popupMessage').textContent = randomMessage.text;
+            document.getElementById('popupEmoji').textContent = randomMessage.emoji;
+            
+            popup.classList.add('show');
+            
+            // Crear elementos flotantes
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => createFloatingElement(), i * 100);
+            }
+        }
+
+        function closePopup() {
+            document.getElementById('messagePopup').classList.remove('show');
+        }
+
+        function createFloatingElement() {
+            const elements = ['✨', '⭐', '🌟', '💫', '🌈', '🦋'];
+            const element = document.createElement('div');
+            element.className = 'floating-element';
+            element.textContent = elements[Math.floor(Math.random() * elements.length)];
+            element.style.left = Math.random() * window.innerWidth + 'px';
+            element.style.top = window.innerHeight - 100 + 'px';
+            document.body.appendChild(element);
+            
+            setTimeout(() => element.remove(), 4000);
+        }
+
+        // Canvas de dibujo
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentColor = '#E91E63';
+        let lineWidth = 5;
+
+        // Ajustar canvas para móviles
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const maxWidth = Math.min(600, container.clientWidth - 40);
+            canvas.style.width = maxWidth + 'px';
+            canvas.style.height = (maxWidth * 400 / 600) + 'px';
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            ctx.beginPath();
+            ctx.moveTo(x * scaleX, y * scaleY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            const x = (e.clientX || e.touches[0].clientX) - rect.left;
+            const y = (e.clientY || e.touches[0].clientY) - rect.top;
+            
+            ctx.lineTo(x * scaleX, y * scaleY);
+            ctx.strokeStyle = currentColor;
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        canvas.addEventListener('touchstart', startDrawing);
+        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchend', stopDrawing);
+
+        function selectColor(color) {
+            currentColor = color;
+            document.querySelectorAll('.color-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function changeLineWidth(change) {
+            lineWidth = Math.max(1, Math.min(20, lineWidth + change));
+        }
+
+        // Juego de colorear
+        const shapeColors = ['#FFD700', '#FF69B4', '#87CEEB', '#98FB98', '#DDA0DD', '#F0E68C', '#FFB6C1'];
+        let currentShapeColorIndex = 0;
+
+        function colorShape() {
+            currentShapeColorIndex = (currentShapeColorIndex + 1) % shapeColors.length;
+            const path = document.querySelector('#magicShape path');
+            path.setAttribute('fill', shapeColors[currentShapeColorIndex]);
+            
+            // Animación
+            const shape = document.querySelector('.shape');
+            shape.style.transform = 'scale(1.2) rotate(360deg)';
+            setTimeout(() => {
+                shape.style.transform = 'scale(1) rotate(0deg)';
+            }, 300);
+            
+            // Sonido
+            playColorSound();
+        }
+
+        function playColorSound() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.value = 400 + (currentShapeColorIndex * 100);
+            gainNode.gain.value = 0.2;
+            
+            oscillator.start();
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+    </script>
+</body>
+</html>
